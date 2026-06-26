@@ -25,20 +25,21 @@ describe("Logica principal do campo minado", () => {
     });
 
     it('deve perder o jogo ao clicar em uma mina', () => {
-        const game = new Game(5, 5, 1);
+        const game = new Game(10, 10, 15);
         game.reveal_cell(0, 0); 
 
-        let mineX, mineY;
-            game.grid.forEach(row => {
-                row.forEach(cell => {
-                    if (cell.is_mine) {
-                        mineX = cell.x;
-                        mineY = cell.y;
-                    }
-                });
-            });
+        let target_mine;
+        for (let y = 0; y < game.rows; y++) {
+            for (let x = 0; x < game.cols; x++) {
+                if (game.grid[x][y].is_mine) {
+                    target_mine = game.grid[x][y];
+                    break;
+                }
+            }
+            if (target_mine) break;
+        } 
 
-        game.reveal_cell(mineX, mineY);
+        game.reveal_cell(target_mine.x, target_mine.y);
         expect(game.status).toBe('lost');
     });
 
@@ -66,15 +67,18 @@ describe("Logica principal do campo minado", () => {
     });
 
     it('deve vencer o jogo ao revelar todas as celulas seguras', () => {
-        const game = new Game(3, 3, 1);
+        const game = new Game(5, 5, 3);
         game.reveal_cell(0, 0); 
         
+        const safe_cells = [];
         game.grid.forEach(row => {
             row.forEach(cell => {
-                if (!cell.isMine && !cell.is_revealed) {
-                    game.reveal_cell(cell.x, cell.y);
-                }
+                if (!cell.is_mine) safe_cells.push(cell);
             });
+        });
+
+        safe_cells.forEach(cell => {
+            game.reveal_cell(cell.x, cell.y);
         });
 
         expect(game.status).toBe('won');
@@ -84,6 +88,8 @@ describe("Logica principal do campo minado", () => {
         const total_mines = 15;
         const game = new Game(10, 10, total_mines);
         
+        game.reveal_cell(0,0);
+
         let mine_count = 0;
         game.grid.forEach(row => {
             row.forEach(cell => {

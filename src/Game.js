@@ -41,7 +41,6 @@ export class Game {
 
             if (!this.grid[y][x].is_mine && (x !== safe_x || y !== safe_y)) {
                 this.grid[y][x].is_mine = true;
-                console.log(`Colocada Mina em ${y},${x}`);
                 placed++;
             }
         }
@@ -77,7 +76,7 @@ export class Game {
     reveal_cell(x, y) {
         if (this.status === "lost" || this.status === "won") return;
         
-        const cell = this.grid[x][y];
+        const cell = this.grid[y][x];
         if (cell.is_flagged || cell.is_revealed) return;
         
         if (this.status === "idle") {
@@ -91,7 +90,9 @@ export class Game {
         }
 
         this.#flood_fill(x, y);
+        console.log("state before:", this.status);
         this.#check_win_condition();
+        console.log("state after:", this.status);
     }
 
     toggle_flag(x, y) {
@@ -105,14 +106,14 @@ export class Game {
     }
 
     #flood_fill(start_x, start_y) {
-        const q = [[start_x, start_x]];
+        const q = [[start_x, start_y]];
 
         while (q.length > 0) {
             const [x,y] = q.shift();
             const cell = this.grid[y][x];
 
-            if (cell.is_revealed || cell.is_flagged || cell.is_mine) return;
-            cell.is_flagged = true;
+            if (cell.is_revealed || cell.is_flagged || cell.is_mine) continue;
+            cell.is_revealed = true;
             this.revealed_count++;
 
             if (cell.neighbour_mines == 0) {
@@ -133,7 +134,7 @@ export class Game {
 
     #check_win_condition() {
         const total_safe_cells = (this.rows * this.cols) - this.total_mines;
-        if (this.revealed_count == total_safe_cells) {
+        if (this.revealed_count === total_safe_cells) {
             this.status = "won";
         }
     }
