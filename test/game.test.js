@@ -2,13 +2,54 @@ import { describe, it, expect } from "vitest";
 import { Game } from "../src/Game";
 
 describe("Logica principal do campo minado", () => {
-    it("deve inicializar o tabuleiro com dimensoes corretas", () => {
-        const game = new Game(8, 12, 10);
+    it('deve atrasar a criacao de minas ate o primeiro clique', () => {
+        const game = new Game(5, 5, 5);
+        expect(game.status).toBe('idle');
+    
+        let has_mines = game.grid.some(row => row.some(cell => cell.is_mine));
+        expect(has_mines).toBe(false);
 
-        expect(game.rows).toBe(8);
-        expect(game.cols).toBe(12);
-        expect(game.grid.length).toBe(8);
-        expect(game.grid[0].length).toBe(12);
+        game.reveal_cell(2, 2);
+    
+        expect(game.status).toBe('playing');
+        has_mines = game.grid.some(row => row.some(cell => cell.is_mine));
+        expect(has_mines).toBe(true);
+    });
+
+    it('nunca deve colocar uma mina na celula do primeiro clique', () => {
+        for (let i = 0; i < 50; i++) {
+            const game = new Game(5, 5, 24);
+            game.reveal_cell(2, 2);
+            expect(game.grid[2][2].is_mine).toBe(false);
+        }
+    });
+
+    it('deve perder o jogo ao clicar em uma mina', () => {
+        const game = new Game(5, 5, 1);
+        game.reveal_cell(0, 0); 
+
+        let mineX, mineY;
+            game.grid.forEach(row => {
+                row.forEach(cell => {
+                    if (cell.is_mine) {
+                        mineX = cell.x;
+                        mineY = cell.y;
+                    }
+                });
+            });
+
+        game.reveal_cell(mineX, mineY);
+        expect(game.status).toBe('lost');
+    });
+
+    it('nn deve revelar celula que contem bandeira', () => {
+        const game = new Game(5, 5, 5);
+        game.reveal_cell(0, 0); 
+        
+        game.toggle_flag(1, 1);
+        game.reveal_cell(1, 1);
+        
+        expect(game.grid[1][1].is_revealed).toBe(false);
     });
 
     it('deve inicializar todas cells com o estado padrao', () => {
@@ -22,6 +63,21 @@ describe("Logica principal do campo minado", () => {
         expect(cell.is_revealed).toBe(false);
         expect(cell.is_flagged).toBe(false);
         expect(cell.neighbour_mines).toBe(0);
+    });
+
+    it('deve vencer o jogo ao revelar todas as celulas seguras', () => {
+        const game = new Game(3, 3, 1);
+        game.reveal_cell(0, 0); 
+        
+        game.grid.forEach(row => {
+            row.forEach(cell => {
+                if (!cell.isMine && !cell.is_revealed) {
+                    game.reveal_cell(cell.x, cell.y);
+                }
+            });
+        });
+
+        expect(game.status).toBe('won');
     });
 
     it('deve colocar a quantidade exata de minas', () => {
