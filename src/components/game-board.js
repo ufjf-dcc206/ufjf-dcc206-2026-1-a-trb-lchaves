@@ -31,6 +31,12 @@ export class GameBoard extends HTMLElement {
         });
     }
 
+    start_new_game(rows, cols, total_mines) {
+        this.game = new Game(rows, cols, total_mines);
+        this.action_mode = 'reveal';
+        this.render();
+    }
+
     toggle_mode() {
         this.action_mode = this.action_mode === 'reveal' ? 'flag' : 'reveal';
         this.render();
