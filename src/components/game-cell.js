@@ -1,12 +1,22 @@
-export class MSCell extends HTMLElement {
+import cellStyles from '../styles/game-cell.css?inline';
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(cellStyles);
+
+export class GameCell extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.shadowRoot.adoptedStyleSheets = [sheet];
     }
 
     connectedCallback() {
         this.render();
         this.addEventListener('click', this.handle_click.bind(this));
+    }
+
+    disconnectedCallback() {
+        this.removeEventListener('click', this.handle_click);
     }
 
     handle_click() {
@@ -29,8 +39,8 @@ export class MSCell extends HTMLElement {
 
     get_color(neighbour_mines) {
         const colors = [
-            '', '#0000FF', '#008000', '#FF0000', '#000080',
-            '#800000', '#008080', '#000000', '#808080'
+            '', '#0022ff', '#008800', '#dd0000', '#000088',
+            '#880000', '#008888', '#000000', '#777777'
         ];
         return colors[neighbour_mines] || '';
     }
@@ -49,42 +59,6 @@ export class MSCell extends HTMLElement {
         if (is_revealed && is_mine) class_name += ' mine';
 
         this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                }
-                .cell {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    width: 100%;
-                    height: 100%;
-                    background-color: #bdbdbd;
-                    box-sizing: border-box;
-                    font-family: monospace;
-                    font-weight: 900;
-                    font-size: 18px;
-                    cursor: pointer;
-                    border: 3px solid;
-                    border-top-color: #fff;
-                    border-left-color: #fff;
-                    border-bottom-color: #7b7b7b;
-                    border-right-color: #7b7b7b;
-                }
-                .cell:active:not(.revealed) {
-                    border: 1px solid #7b7b7b;
-                }
-                .cell.revealed {
-                    border: 1px solid #7b7b7b;
-                    background-color: #e0e0e0;
-                    cursor: default;
-                }
-                .cell.mine {
-                    background-color: #ff4c4c;
-                }
-            </style>
             <div class="${class_name}" style="color: ${color}">
                 ${content}
             </div>
@@ -92,4 +66,4 @@ export class MSCell extends HTMLElement {
     }
 }
 
-customElements.define('ms-cell', MSCell);
+customElements.define('game-cell', GameCell);

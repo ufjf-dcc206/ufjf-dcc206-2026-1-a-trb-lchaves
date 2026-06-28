@@ -1,12 +1,17 @@
-import { Game } from "../Game.js";
-import "./game-cell.js";
+import { Game } from '../Game.js';
+import './game-cell.js'; 
+import boardStyles from '../styles/game-board.css?inline';
+
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(boardStyles);
 
 export class GameBoard extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({mode: 'open'});
-        this.game = new Game(10,10,10);
-        this.action_mode = 'reveal';
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.adoptedStyleSheets = [sheet];        
+        this.game = new Game(10, 10, 12);
+        this.action_mode = 'reveal'; 
     }
 
     connectedCallback() {
@@ -17,92 +22,73 @@ export class GameBoard extends HTMLElement {
     setup_events() {
         this.shadowRoot.addEventListener('cell-interaction', (e) => {
             const { x, y } = e.detail;
-
-            if (this.action_mode == 'reveal') {
+            if (this.action_mode === 'reveal') {
                 this.game.reveal_cell(x, y);
             } else {
                 this.game.toggle_flag(x, y);
             }
-
             this.render(); 
         });
     }
 
     toggle_mode() {
-        this.action_mode = this.action_mode == 'reveal' ? 'flag' : 'reveal';
+        this.action_mode = this.action_mode === 'reveal' ? 'flag' : 'reveal';
         this.render();
     }
 
+    get_msn_status(status) {
+        const statusMap = {
+            'idle': { text: 'Disponível', color: '#33cc33' },
+            'playing': { text: 'Ocupado (Jogando)', color: '#ff3333' },
+            'won': { text: 'Ganhou! <(￣︶￣)>', color: '#00ccff' },
+            'lost': { text: 'Invisível (Perdeu!)', color: '#999999' }
+        };
+        return statusMap[status] || statusMap['idle'];
+    }
+
     render() {
+        const msnStatus = this.get_msn_status(this.game.status);
+        
         const grid_template = this.game.grid.map(row => {
             return row.map(cell => {
-                return `<ms-cell
+                return `<game-cell
                     x="${cell.x}"
                     y="${cell.y}"
                     is-revealed="${cell.is_revealed}"
                     is-mine="${cell.is_mine}"
                     is-flagged="${cell.is_flagged}"
                     neighbour-mines="${cell.neighbour_mines}">
-                </ms-cell>`;
+                </game-cell>`;
             }).join('');
         }).join('');
 
         this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    font-family: sans-serif;
-                    user-select: none;
-                }
-                .header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    width: 100%;
-                    max-width: 320px;
-                    margin-bottom: 1rem;
-                    padding: 0.5rem;
-                    background: #f0f0f0;
-                    border-radius: 8px;
-                }
-                .grid {
-                    display: grid;
-                    grid-template-columns: repeat(${this.game.cols}, 30px);
-                    grid-template-rows: repeat(${this.game.rows}, 30px);
-                    gap: 2px;
-                    background-color: #bdbdbd;
-                    padding: 2px;
-                    border: 3px solid #7b7b7b;
-                    border-top-color: #fff;
-                    border-left-color: #fff;
-                }
-                button {
-                    padding: 8px 16px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    border: 2px solid #7b7b7b;
-                    border-top-color: #fff;
-                    border-left-color: #fff;
-                    background: #e0e0e0;
-                }
-                button:active {
-                    border: 2px solid #fff;
-                    border-top-color: #7b7b7b;
-                    border-left-color: #7b7b7b;
-                }
-            </style>
+            <div class="msn-title-bar">
+                <span>·´¯\`·.·★ Campo Minado ★·.·´¯\`·</span>
+                <div class="window-controls">
+                    <span>_</span><span>☐</span><span style="background: #e06c6c; color: white;">X</span>
+                </div>
+            </div>
             
-            <div class="header">
-                <span class="status">Status: <strong>${this.game.status.toUpperCase()}</strong></span>
-                <button id="mode-toggle">
-                    ${this.action_mode === 'reveal' ? 'Cavar' : 'Bandeira'}
+            <div class="user-info-section">
+                <div class="nickname">Player [SubNick: Procurando minas...]</div>
+                <div class="status-subtext">
+                    <div class="status-bullet" style="background-color: ${msnStatus.color}; color: ${msnStatus.color};"></div>
+                    <span>Status: <strong>${msnStatus.text}</strong></span>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <span style="font-size: 11px; color: #476277;">Modo de Toque:</span>
+                <button id="mode-toggle" class="action-btn ${this.action_mode === 'reveal' ? 'active-reveal' : 'active-flag'}">
+                    ${this.action_mode === 'reveal' ? 'CAVAR' : 'BANDEIRA'}
                 </button>
             </div>
             
-            <div class="grid">
-                ${grid_template}
+            <div class="grid-container">
+                <div class="grid" style="grid-template-columns: repeat(${this.game.cols}, 28px); grid-template-rows: repeat(${this.game.rows}, 28px);">
+                    ${grid_template}
+                </div>
             </div>
         `;
 

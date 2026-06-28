@@ -1,0 +1,115 @@
+:host {
+    display: block;
+    background: #e1e9f4;
+    border: 2px solid #699fc7;
+    border-radius: 6px 6px 4px 4px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 #fff;
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    font-family: 'Tahoma', sans-serif;
+}
+
+.msn-title-bar {
+    background: linear-gradient(to right, #4a75a0, #699fc7);
+    color: white;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+
+.window-controls span {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: #e1e9f4;
+    color: #4a75a0;
+    text-align: center;
+    line-height: 12px;
+    margin-left: 2px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 9px;
+}
+
+.user-info-section {
+    padding: 10px;
+    background: linear-gradient(to bottom, #f3f7fc, #e1e9f4);
+    border-bottom: 1px solid #b0c7d6;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nickname {
+    font-size: 13px;
+    font-weight: bold;
+    color: #1c3d5a;
+}
+
+.status-subtext {
+    font-size: 11px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 4px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+}
+
+.action-btn {
+    background: linear-gradient(to bottom, #cedce7 0%, #596a72 100%);
+    border: 1px solid #4a555a;
+    color: white;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+    transition: all 0.1s;
+}
+
+.action-btn.active-reveal {
+    background: linear-gradient(to bottom, #7abcff 0%, #4096ee 100%);
+    border-color: #1d62a9;
+}
+
+.action-btn.active-flag {
+    background: linear-gradient(to bottom, #f28080 0%, #c62828 100%);
+    border-color: #7f1414;
+}
+
+.grid-container {
+    background: #d4e0ee;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.grid {
+    display: grid;
+    gap: 1px;
+    background-color: #8faec4;
+    padding: 2px;
+    border: 1px solid #699fc7;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+}

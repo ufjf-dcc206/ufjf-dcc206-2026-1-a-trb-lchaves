@@ -1,0 +1,46 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f4f9;
+    box-sizing: border-box;
+    font-family: 'VT323', monospace;
+    font-weight: bold;
+    font-size: 22px; 
+    cursor: pointer;
+    border: 2px solid;
+    border-top-color: #ffffff;
+    border-left-color: #ffffff;
+    border-bottom-color: #a6b9c7;
+    border-right-color: #a6b9c7;
+    transition: background-color 0.05s;
+}
+
+.cell:active:not(.revealed) {
+    background-color: #dbe4ee;
+    border: 1px solid #a6b9c7;
+}
+
+.cell.revealed {
+    border: 1px solid #cbdde9;
+    background-color: #dbe4ee;
+    cursor: default;
+}
+
+.cell.mine {
+    background-color: #ff6b6b;
+    animation: blink 0.5s infinite alternate;
+}
+
+@keyframes blink {
+    from { background-color: #ff6b6b; }
+    to { background-color: #ff0000; }
+}
